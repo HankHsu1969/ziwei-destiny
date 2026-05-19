@@ -68,6 +68,8 @@ async function streamGenerate(section, facts, model, onChunk) {
   const key = getApiKey();
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${key}`;
 
+  if (!key) throw 'KEY_INVALID';
+
   let response;
   try {
     response = await fetch(url, {
@@ -78,14 +80,30 @@ async function streamGenerate(section, facts, model, onChunk) {
       }),
     });
   } catch (err) {
-    if (err === 'KEY_INVALID' || err === 'QUOTA' || err === 'NETWORK') throw err;
+    // fetch 本身失敗 = 真正的連線問題(斷網、DNS、CORS 等)
     throw 'NETWORK';
   }
 
   if (!response.ok) {
-    if (response.status === 401 || response.status === 403) throw 'KEY_INVALID';
+    // 讀出 API 回傳的真實錯誤訊息
+    let detail = '';
+    try {
+      const body = await response.text();
+      try {
+        detail = JSON.parse(body)?.error?.message || body;
+      } catch {
+        detail = body;
+      }
+    } catch {
+      detail = '';
+    }
     if (response.status === 429) throw 'QUOTA';
-    throw 'NETWORK';
+    if (response.status === 401 || response.status === 403) throw 'KEY_INVALID';
+    if (response.status === 400 && /api[_ ]?key|API_KEY_INVALID/i.test(detail)) {
+      throw 'KEY_INVALID';
+    }
+    // 其餘錯誤(400 內容問題、404 模型不存在、500 伺服器錯)直接顯示真實訊息
+    throw `Gemini 回應錯誤 (HTTP ${response.status})${detail ? ':' + detail.slice(0, 400) : ''}`;
   }
 
   const reader = response.body.getReader();

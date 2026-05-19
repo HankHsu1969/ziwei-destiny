@@ -517,7 +517,9 @@ function renderPanels(data) {
       } else if (err === 'QUOTA') {
         msg = 'Gemini 額度已用盡,請稍後再試';
       } else if (err === 'NETWORK') {
-        msg = '連線失敗,請檢查網路';
+        msg = (location.protocol === 'file:')
+          ? '連線失敗 — 你是直接雙擊開啟檔案的,部分瀏覽器會阻擋此模式下的 API 連線。建議改用本機伺服器開啟(或換 Chrome 試試)。'
+          : '連線失敗,請檢查網路連線。';
       } else if (typeof err === 'string') {
         msg = err;
       }
