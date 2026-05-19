@@ -247,8 +247,118 @@ function onSubmit() {
   renderChart(chartData);
 }
 
+// ── 地支 → 格子位置 (row, col) 1-indexed ────────────────────
+const BRANCH_POS = {
+  子:[4,3], 丑:[4,2], 寅:[4,1], 卯:[3,1],
+  辰:[2,1], 巳:[1,1], 午:[1,2], 未:[1,3],
+  申:[1,4], 酉:[2,4], 戌:[3,4], 亥:[4,4],
+};
+
+// ── 渲染命盤 ───────────────────────────────────────────────
+function renderChart(data) {
+  const app = document.getElementById('app');
+
+  // 宮格 HTML 產生器
+  function palaceHTML(palace) {
+    const pos = BRANCH_POS[palace.branch];
+    if (!pos) return '';
+    const [row, col] = pos;
+    const gridStyle = `grid-row:${row};grid-column:${col};`;
+
+    const majorHTML = palace.majorStars.map(s => {
+      const tag = s.mutagen ? `<span class="mutagen">⟨${s.mutagen}⟩</span>` : '';
+      return `<span class="star-major">${s.name}${tag}</span>`;
+    }).join('');
+
+    const minorHTML = palace.minorStars.map(s => {
+      const tag = s.mutagen ? `<span class="mutagen-minor">⟨${s.mutagen}⟩</span>` : '';
+      return `<span class="star-minor">${s.name}${tag}</span>`;
+    }).join('');
+
+    const adjHTML = palace.adjStars.map(s =>
+      `<span class="star-adj">${s}</span>`
+    ).join('');
+
+    return `
+      <div class="palace" style="${gridStyle}">
+        <div class="palace-branch">${palace.branch}</div>
+        <div class="palace-name">${palace.name}</div>
+        <div class="palace-stars">
+          ${majorHTML}
+          ${minorHTML ? `<div class="stars-minor-row">${minorHTML}</div>` : ''}
+          ${adjHTML ? `<div class="stars-adj-row">${adjHTML}</div>` : ''}
+        </div>
+      </div>`;
+  }
+
+  // 中宮 HTML
+  const bazi = data.bazi;
+  const centerHTML = `
+    <div class="palace center" style="grid-row:2/4;grid-column:2/4;">
+      <div class="center-name">${data.name}</div>
+      <div class="center-gender">${data.gender}</div>
+      <div class="center-date">
+        <span class="center-label">國曆</span>${data.solarDate}
+      </div>
+      <div class="center-date">
+        <span class="center-label">農曆</span>${data.lunarDate}
+      </div>
+      <div class="center-wuxing">${data.fiveElementsClass}</div>
+      <div class="center-soul">
+        <span class="center-label">命主</span>${data.soul}
+        <span class="center-sep">‧</span>
+        <span class="center-label">身主</span>${data.body}
+      </div>
+      <div class="center-bazi">
+        <span class="bazi-item"><span class="center-label">年</span>${bazi.year}</span>
+        <span class="bazi-item"><span class="center-label">月</span>${bazi.month}</span>
+        <span class="bazi-item"><span class="center-label">日</span>${bazi.day}</span>
+        <span class="bazi-item"><span class="center-label">時</span>${bazi.hour}</span>
+      </div>
+    </div>`;
+
+  // 全部宮格
+  const palacesHTML = data.palaces.map(palaceHTML).join('');
+
+  app.innerHTML = `
+    <div class="act2-wrap fade-in">
+      <header class="act2-header">
+        <h1 class="title-main">紫微斗數</h1>
+        <p class="title-sub">命 ‧ 八字 ‧ 流年</p>
+      </header>
+
+      <div class="board-wrap">
+        <div class="board">
+          ${palacesHTML}
+          ${centerHTML}
+        </div>
+      </div>
+
+      <div class="panels-wrap">
+        <div class="panel-card" id="panel-overall">
+          <div class="panel-title">整體格局</div>
+          <div class="panel-body"></div>
+        </div>
+        <div class="panel-card" id="panel-palaces">
+          <div class="panel-title">十二宮詳解</div>
+          <div class="panel-body"></div>
+        </div>
+        <div class="panel-card" id="panel-chenggu">
+          <div class="panel-title">八字重量</div>
+          <div class="panel-body"></div>
+        </div>
+        <div class="panel-card" id="panel-liunian">
+          <div class="panel-title">2026 流年</div>
+          <div class="panel-body"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  renderPanels(data);
+}
+
 // ── 佔位函式(後續任務實作) ──────────────────────────────────
-function renderChart(data){ /* T8 實作 */ }
 function renderPanels(data){ /* T9 實作 */ }
 
 // ── 啟動 ───────────────────────────────────────────────────

@@ -102,3 +102,158 @@ button{font-family:inherit;cursor:pointer;}
 }
 .btn-primary:hover{opacity:.88;box-shadow:0 0 28px rgba(212,175,90,.55);}
 .btn-primary:active{opacity:.75;}
+
+/* ── 淡入動畫 ──────────────────────────────────────────── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.fade-in{animation:fadeIn .6s ease both;}
+
+/* ── 第二幕 命盤 ──────────────────────────────────────── */
+.act2-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;padding:40px 16px 80px;
+}
+.act2-header{text-align:center;margin-bottom:32px;}
+
+/* 命盤外框 */
+.board-wrap{width:100%;max-width:900px;padding:0 8px;}
+
+/* 4×4 格線 */
+.board{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(4,minmax(120px,auto));
+  gap:6px;
+}
+
+/* 宮格 */
+.palace{
+  position:relative;
+  background:rgba(22,34,63,.78);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:8px 10px;
+  overflow:hidden;
+  transition:border-color .25s,box-shadow .25s;
+  min-height:120px;
+}
+.palace:hover{
+  border-color:var(--gold);
+  box-shadow:0 0 14px rgba(212,175,90,.28),inset 0 0 10px rgba(212,175,90,.06);
+}
+
+/* 地支角標 */
+.palace-branch{
+  position:absolute;top:6px;right:8px;
+  font-size:.7rem;color:var(--ink);
+  letter-spacing:.1em;
+}
+
+/* 宮名 */
+.palace-name{
+  font-size:.85rem;letter-spacing:.12em;
+  color:var(--gold);font-weight:600;
+  margin-bottom:6px;
+  text-shadow:0 0 8px rgba(212,175,90,.4);
+}
+
+/* 主星 */
+.star-major{
+  display:inline-block;
+  font-size:.88rem;color:var(--gold-light);
+  font-weight:600;margin-right:4px;margin-bottom:2px;
+  letter-spacing:.05em;
+}
+.mutagen{
+  font-size:.7rem;color:var(--gold);
+  letter-spacing:0;vertical-align:.05em;
+}
+
+/* 輔星 */
+.stars-minor-row{margin-top:4px;}
+.star-minor{
+  display:inline-block;
+  font-size:.75rem;color:var(--text);
+  margin-right:3px;margin-bottom:1px;
+  opacity:.85;
+}
+.mutagen-minor{
+  font-size:.65rem;color:var(--ink);
+  letter-spacing:0;vertical-align:.05em;
+}
+
+/* 雜曜 */
+.stars-adj-row{margin-top:3px;}
+.star-adj{
+  display:inline-block;
+  font-size:.68rem;color:var(--ink);
+  margin-right:3px;margin-bottom:1px;
+  opacity:.75;
+}
+
+/* 中宮 */
+.palace.center{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;gap:4px;
+  background:rgba(16,24,52,.9);
+  border:1px solid var(--gold);
+  box-shadow:inset 0 0 24px rgba(212,175,90,.08),0 0 20px rgba(212,175,90,.12);
+}
+.center-name{
+  font-size:1.4rem;letter-spacing:.25em;
+  color:var(--gold);font-weight:700;
+  text-shadow:0 0 16px rgba(212,175,90,.55);
+  margin-bottom:2px;
+}
+.center-gender{
+  font-size:.8rem;letter-spacing:.2em;
+  color:var(--ink);margin-bottom:4px;
+}
+.center-date{
+  font-size:.78rem;color:var(--text);line-height:1.7;
+}
+.center-wuxing{
+  font-size:.85rem;color:var(--gold-light);
+  letter-spacing:.12em;margin:4px 0;
+}
+.center-soul{
+  font-size:.78rem;color:var(--text);
+  display:flex;align-items:center;gap:4px;
+}
+.center-sep{color:var(--ink);}
+.center-label{
+  font-size:.68rem;color:var(--ink);
+  letter-spacing:.08em;margin-right:2px;
+}
+.center-bazi{
+  display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;justify-content:center;
+}
+.bazi-item{
+  font-size:.8rem;color:var(--gold-light);
+  letter-spacing:.05em;white-space:nowrap;
+}
+
+/* ── 面板區 ────────────────────────────────────────────── */
+.panels-wrap{
+  width:100%;max-width:900px;
+  display:flex;flex-direction:column;gap:16px;
+  margin-top:28px;padding:0 8px;
+}
+.panel-card{
+  background:rgba(22,34,63,.72);
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  backdrop-filter:blur(4px);
+}
+.panel-title{
+  padding:14px 20px;
+  font-size:.9rem;letter-spacing:.2em;
+  color:var(--gold);font-weight:600;
+  border-bottom:1px solid var(--line);
+  background:rgba(7,10,20,.35);
+}
+.panel-body{
+  padding:20px;
+  color:var(--text);font-size:.9rem;line-height:1.9;
+  min-height:48px;
+}
