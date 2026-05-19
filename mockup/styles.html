@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紫微命盤 — 視覺風格 Mockup</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Noto Serif TC","Songti TC",serif; background:#0a0a0f; color:#eee; }
+
+  /* ---- 風格切換列 ---- */
+  .tabs { display:flex; justify-content:center; gap:12px; padding:24px 12px 8px; flex-wrap:wrap; }
+  .tabs button {
+    font-family:inherit; font-size:15px; padding:10px 22px; cursor:pointer;
+    background:#15151f; color:#aaa; border:1px solid #333; border-radius:30px;
+    transition:.25s;
+  }
+  .tabs button.on { color:#fff; border-color:#caa86a; box-shadow:0 0 16px rgba(202,168,106,.5); }
+  .hint { text-align:center; color:#666; font-size:13px; padding:4px 0 18px; }
+
+  .stage { display:none; padding:24px 16px 60px; min-height:100vh; }
+  .stage.on { display:block; }
+
+  /* ===== 共用命盤格線 ===== */
+  .board {
+    display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(4,150px);
+    gap:6px; max-width:880px; margin:24px auto;
+  }
+  .palace { padding:10px; border-radius:6px; position:relative; display:flex; flex-direction:column; }
+  .pname { font-size:13px; font-weight:700; letter-spacing:1px; }
+  .pbranch { position:absolute; right:8px; bottom:6px; font-size:12px; opacity:.55; }
+  .pstar { margin-top:6px; font-size:17px; font-weight:700; line-height:1.5; }
+  .pmini { margin-top:auto; font-size:11px; opacity:.65; line-height:1.5; }
+  .center {
+    grid-column:2/4; grid-row:2/4; border-radius:8px; padding:18px;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
+  }
+  .center h2 { font-size:22px; letter-spacing:3px; margin-bottom:10px; }
+  .center p { font-size:13px; line-height:1.9; opacity:.8; }
+  .title { text-align:center; }
+  .title .big { font-size:38px; letter-spacing:10px; }
+  .title .sub { font-size:13px; letter-spacing:6px; margin-top:8px; opacity:.6; }
+  .panel { max-width:880px; margin:20px auto 0; padding:20px 26px; border-radius:8px; font-size:14px; line-height:2; }
+
+  /* ===== 風格 1：星空墨韻 ===== */
+  #s1 { background:radial-gradient(ellipse at 50% 0%,#10182e 0%,#070a14 60%,#04050a 100%); }
+  #s1 .title .big { color:#f4e4b8; text-shadow:0 0 24px rgba(212,175,90,.6); }
+  #s1 .title .sub { color:#7f8db5; }
+  #s1 .board .palace { background:linear-gradient(160deg,rgba(22,32,58,.85),rgba(10,14,28,.9)); border:1px solid #24304f; }
+  #s1 .palace:hover { border-color:#d4af5a; box-shadow:0 0 18px rgba(212,175,90,.3); }
+  #s1 .pname { color:#d4af5a; }
+  #s1 .pstar { color:#e9eef7; }
+  #s1 .center { background:radial-gradient(circle,#16223f,#0a1020); border:1px solid #2c3a5e; }
+  #s1 .center h2 { color:#f4e4b8; }
+  #s1 .panel { background:rgba(16,24,46,.6); border:1px solid #24304f; color:#cdd6e8; }
+  #s1 .swatch span:nth-child(1){background:#070a14;} #s1 .swatch span:nth-child(2){background:#16223f;}
+  #s1 .swatch span:nth-child(3){background:#d4af5a;} #s1 .swatch span:nth-child(4){background:#7f8db5;}
+
+  /* ===== 風格 2：紫氣星雲 ===== */
+  #s2 { background:radial-gradient(ellipse at 30% 10%,#3a1259 0%,#1a0a2e 45%,#0a0512 100%); }
+  #s2 .title .big { color:#f0d9ff; text-shadow:0 0 30px rgba(190,120,255,.8); }
+  #s2 .title .sub { color:#b98fd6; }
+  #s2 .board .palace { background:linear-gradient(160deg,rgba(58,28,92,.7),rgba(20,10,40,.85)); border:1px solid #4a2a72; }
+  #s2 .palace:hover { border-color:#d49bff; box-shadow:0 0 22px rgba(190,120,255,.5); }
+  #s2 .pname { color:#d49bff; }
+  #s2 .pstar { color:#f3e9ff; text-shadow:0 0 10px rgba(190,120,255,.4); }
+  #s2 .center { background:radial-gradient(circle,#46206e,#1c0c34); border:1px solid #6a3a9e; }
+  #s2 .center h2 { color:#f0d9ff; }
+  #s2 .panel { background:rgba(40,18,66,.6); border:1px solid #4a2a72; color:#e3d2f0; }
+  #s2 .swatch span:nth-child(1){background:#0a0512;} #s2 .swatch span:nth-child(2){background:#3a1259;}
+  #s2 .swatch span:nth-child(3){background:#d49bff;} #s2 .swatch span:nth-child(4){background:#b98fd6;}
+
+  /* ===== 風格 3：古卷朱砂 ===== */
+  #s3 { background:#1a1410; }
+  #s3 .title .big { color:#e8c87a; text-shadow:0 2px 6px #000; }
+  #s3 .title .sub { color:#9a7d4e; }
+  #s3 .board .palace { background:linear-gradient(170deg,#2c2318,#221a11); border:1px solid #4a3a22; }
+  #s3 .palace:hover { border-color:#c0392b; box-shadow:0 0 16px rgba(192,57,43,.4); }
+  #s3 .pname { color:#c0392b; }
+  #s3 .pstar { color:#ecdcb8; }
+  #s3 .center { background:linear-gradient(160deg,#322617,#241a0f); border:1px solid #5a4424; }
+  #s3 .center h2 { color:#e8c87a; }
+  #s3 .panel { background:#241c12; border:1px solid #4a3a22; color:#d8c79e; }
+  #s3 .swatch span:nth-child(1){background:#1a1410;} #s3 .swatch span:nth-child(2){background:#2c2318;}
+  #s3 .swatch span:nth-child(3){background:#c0392b;} #s3 .swatch span:nth-child(4){background:#e8c87a;}
+
+  .swatch { display:flex; justify-content:center; gap:10px; margin:18px 0 4px; }
+  .swatch span { width:46px; height:46px; border-radius:50%; border:1px solid rgba(255,255,255,.15); }
+  .stylename { text-align:center; font-size:15px; letter-spacing:2px; color:#999; margin-bottom:4px; }
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <button class="on" onclick="show(1,this)">風格一 · 星空墨韻</button>
+  <button onclick="show(2,this)">風格二 · 紫氣星雲</button>
+  <button onclick="show(3,this)">風格三 · 古卷朱砂</button>
+</div>
+<div class="hint">點上方切換三種「華麗神祕」方向 — 每種都畫了紫微命盤十二宮示意</div>
+
+<!-- 共用內容由 JS 注入 -->
+<div id="s1" class="stage on"></div>
+<div id="s2" class="stage"></div>
+<div id="s3" class="stage"></div>
+
+<script>
+const palaces = [
+  // 4x4：外圈12宮，地支固定
+  {n:'命宮',  b:'巳', star:'紫微 · 天府', mini:'文昌 左輔 · 祿存', area:'1/1'},
+  {n:'父母宮',b:'午', star:'太陰',        mini:'天鉞 · 紅鸞',      area:'1/2'},
+  {n:'福德宮',b:'未', star:'貪狼',        mini:'火星 · 天喜',      area:'1/3'},
+  {n:'田宅宮',b:'申', star:'天同 巨門',   mini:'文曲 · 陀羅',      area:'1/4'},
+  {n:'兄弟宮',b:'辰', star:'廉貞 七殺',   mini:'地空 · 天馬',      area:'2/1'},
+  {n:'官祿宮',b:'酉', star:'武曲',        mini:'右弼 · 擎羊',      area:'2/4'},
+  {n:'夫妻宮',b:'卯', star:'天相',        mini:'鈴星 · 孤辰',      area:'3/1'},
+  {n:'僕役宮',b:'戌', star:'天梁',        mini:'地劫 · 寡宿',      area:'3/4'},
+  {n:'子女宮',b:'寅', star:'破軍',        mini:'天魁 · 龍池',      area:'4/1'},
+  {n:'財帛宮',b:'丑', star:'天機',        mini:'鳳閣 · 三台',      area:'4/2'},
+  {n:'疾厄宮',b:'子', star:'太陽',        mini:'八座 · 恩光',      area:'4/3'},
+  {n:'遷移宮',b:'亥', star:'空宮借星',    mini:'天虛 · 截空',      area:'4/4'},
+];
+
+function boardHTML() {
+  let cells = palaces.map(p =>
+    `<div class="palace" style="grid-area:${p.area}">
+       <div class="pname">${p.n}</div>
+       <div class="pstar">${p.star}</div>
+       <div class="pmini">${p.mini}</div>
+       <div class="pbranch">${p.b}</div>
+     </div>`).join('');
+  cells += `<div class="center">
+      <h2>命主 · 文曲</h2>
+      <p>陽曆 1990 / 06 / 15　巳時<br>農曆 庚午年 五月廿三<br>身主 · 天機　五行局 · 木三局</p>
+    </div>`;
+  return `<div class="board">${cells}</div>`;
+}
+
+function stageHTML(name) {
+  return `
+   <div class="stylename">${name}</div>
+   <div class="swatch"><span></span><span></span><span></span><span></span></div>
+   <div class="title">
+     <div class="big">紫微斗數</div>
+     <div class="sub">命 盤 ‧ 八 字 ‧ 流 年</div>
+   </div>
+   ${boardHTML()}
+   <div class="panel">
+     <b>解盤示意 —</b> 命宮坐紫微、天府於巳，帝星得輔，主其人器局恢宏、自有主張，
+     一生不甘居於人下。逢文昌、左輔同宮，文質彬彬而善謀，祿存來會，財氣自足……
+     <br><br>
+     <b>八字輕重 —</b> 三兩六錢　「不須勞碌過平生，獨自成家振祖風……」
+   </div>`;
+}
+
+[['s1','星空墨韻 — 深夜藍黑 × 星金，水墨留白，沉靜深邃'],
+ ['s2','紫氣星雲 — 紫羅蘭星雲漸層 × 霓光紫，奇幻飄渺'],
+ ['s3','古卷朱砂 — 暗色古卷 × 朱砂紅金，傳統命書質感']]
+.forEach(([id,name]) => document.getElementById(id).innerHTML = stageHTML(name));
+
+function show(n,btn){
+  document.querySelectorAll('.stage').forEach((s,i)=>s.classList.toggle('on',i===n-1));
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
