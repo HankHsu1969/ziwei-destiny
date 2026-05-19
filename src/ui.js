@@ -501,7 +501,13 @@ function renderPanels(data) {
         <div class="stream-error-msg">${msg}</div>
         <button class="btn-retry">重新揭示</button>
       `;
-      contentEl.innerHTML = acc ? `<div style="white-space:pre-wrap;">${acc}</div>` : '';
+      contentEl.textContent = '';
+      if (acc) {
+        const accDiv = document.createElement('div');
+        accDiv.style.whiteSpace = 'pre-wrap';
+        accDiv.textContent = acc;
+        contentEl.appendChild(accDiv);
+      }
       contentEl.appendChild(errWrap);
 
       if (err === 'KEY_INVALID') {
@@ -514,31 +520,19 @@ function renderPanels(data) {
     }
   }
 
-  // 依序串流四段
+  // 依序串流四段（streamSection 內部已捕捉所有錯誤並呈現重試 UI，不會外拋）
   async function runAllSections() {
-    // overall
     const overallEl = document.querySelector('#panel-overall .panel-body');
-    if (overallEl) {
-      try { await streamSection('overall', overallEl); } catch (_) { /* 顯示重試 UI 後繼續 */ }
-    }
+    if (overallEl) await streamSection('overall', overallEl);
 
-    // palaces
     const palacesEl = document.querySelector('#panel-palaces .panel-body');
-    if (palacesEl) {
-      try { await streamSection('palaces', palacesEl); } catch (_) { /* 繼續 */ }
-    }
+    if (palacesEl) await streamSection('palaces', palacesEl);
 
-    // chenggu — 填到本地結果下方的論斷區
     const chengguAnalysisEl = document.getElementById('chenggu-analysis-content');
-    if (chengguAnalysisEl) {
-      try { await streamSection('chenggu', chengguAnalysisEl); } catch (_) { /* 繼續 */ }
-    }
+    if (chengguAnalysisEl) await streamSection('chenggu', chengguAnalysisEl);
 
-    // liunian
     const liunianEl = document.querySelector('#panel-liunian .panel-body');
-    if (liunianEl) {
-      try { await streamSection('liunian', liunianEl); } catch (_) { /* 繼續 */ }
-    }
+    if (liunianEl) await streamSection('liunian', liunianEl);
   }
 
   runAllSections();
