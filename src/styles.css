@@ -7,3 +7,98 @@ body{margin:0;font-family:"Noto Serif TC","Songti TC",serif;color:var(--text);
   background:radial-gradient(ellipse at 50% 0%,#10182e 0%,#070a14 60%,#04050a 100%);
   min-height:100vh;}
 button{font-family:inherit;cursor:pointer;}
+
+/* ── 第一幕 入命表單 ──────────────────────────── */
+.act1-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;padding:48px 16px 64px;
+}
+.act1-header{text-align:center;margin-bottom:40px;}
+.title-main{
+  font-size:clamp(2rem,6vw,3.2rem);
+  letter-spacing:.4em;color:var(--gold);
+  text-shadow:0 0 24px rgba(212,175,90,.45);
+  margin:0 0 8px;font-weight:400;
+}
+.title-sub{
+  font-size:1rem;letter-spacing:.5em;color:var(--ink);margin:0;
+}
+
+/* 卡片 */
+.form-card{
+  background:rgba(22,34,63,.72);border:1px solid var(--line);
+  border-radius:8px;padding:32px 28px;width:100%;max-width:480px;
+  backdrop-filter:blur(6px);
+}
+
+/* 錯誤區 */
+.form-errors{
+  margin-bottom:16px;padding:12px 16px;
+  border-left:3px solid #e05555;
+  background:rgba(224,85,85,.12);border-radius:4px;
+}
+.form-error-item{color:#f08080;font-size:.875rem;line-height:1.8;}
+
+/* 通用列 */
+.form-row{margin-bottom:20px;}
+.form-row:last-child{margin-bottom:0;}
+.form-label{
+  display:block;font-size:.8rem;letter-spacing:.15em;
+  color:var(--gold-light);margin-bottom:8px;
+}
+
+/* input / select */
+.form-input{
+  width:100%;background:rgba(7,10,20,.6);
+  border:1px solid var(--line);border-radius:4px;
+  padding:9px 12px;color:var(--text);font-size:.95rem;
+  font-family:inherit;outline:none;transition:border-color .2s;
+}
+.form-input:focus{border-color:var(--gold);}
+.form-select{appearance:none;-webkit-appearance:none;cursor:pointer;}
+.form-select option{background:#16223f;}
+
+/* 日期三欄 */
+.date-group{display:flex;gap:8px;}
+.date-inp{flex:1;min-width:0;}
+
+/* radio 群組 */
+.radio-group{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+.radio-label{
+  display:flex;align-items:center;gap:6px;
+  color:var(--text);font-size:.9rem;cursor:pointer;
+}
+.radio-label input[type="radio"],
+.radio-label input[type="checkbox"]{
+  accent-color:var(--gold);cursor:pointer;
+}
+
+/* 閏月 */
+.leap-wrap{
+  display:flex;align-items:center;gap:6px;
+  color:var(--gold-light);font-size:.85rem;
+  margin-top:8px;cursor:pointer;
+}
+.leap-wrap input{accent-color:var(--gold);}
+
+/* 金鑰區 */
+.key-section{
+  border-top:1px solid var(--line);padding-top:20px;margin-top:4px;
+}
+.key-options{margin-top:10px;display:flex;flex-direction:column;gap:10px;}
+.model-row{display:flex;align-items:center;gap:12px;}
+.model-row .form-label{margin-bottom:0;white-space:nowrap;}
+.model-row .form-select{flex:1;}
+
+/* 起盤按鈕 */
+.form-submit-row{text-align:center;margin-top:8px;}
+.btn-primary{
+  display:inline-block;padding:12px 48px;
+  background:linear-gradient(135deg,#b8932a 0%,var(--gold) 50%,#e8c96a 100%);
+  color:#07090e;font-size:1.05rem;letter-spacing:.4em;font-weight:700;
+  border:none;border-radius:4px;
+  box-shadow:0 0 16px rgba(212,175,90,.35),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:opacity .2s,box-shadow .2s;
+}
+.btn-primary:hover{opacity:.88;box-shadow:0 0 28px rgba(212,175,90,.55);}
+.btn-primary:active{opacity:.75;}
