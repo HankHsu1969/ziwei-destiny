@@ -358,8 +358,149 @@ function renderChart(data) {
   renderPanels(data);
 }
 
-// ── 佔位函式(後續任務實作) ──────────────────────────────────
-function renderPanels(data){ /* T9 實作 */ }
+// ── 四段解讀面板 ───────────────────────────────────────────
+function renderPanels(data) {
+  // (a) 算農曆月日
+  const sd = data.solarDate.split('-').map(Number);
+  const lunar = Solar.fromYmd(sd[0], sd[1], sd[2]).getLunar();
+  const lunarMonth = Math.abs(lunar.getMonth());
+  const lunarDay = lunar.getDay();
+  const hourZhi = data.bazi.hour.slice(-1);
+
+  // 稱骨
+  const cg = getChengGu(data.bazi.year, lunarMonth, lunarDay, hourZhi);
+
+  // 組 facts
+  const facts = {
+    name: data.name,
+    gender: data.gender,
+    bazi: `${data.bazi.year} ${data.bazi.month} ${data.bazi.day} ${data.bazi.hour}`,
+    chengGu: cg.weightText,
+    fiveElementsClass: data.fiveElementsClass,
+    palacesText: data.palaces.map(p =>
+      `${p.name}(${p.branch})主星:${p.majorStars.map(s => s.name + (s.mutagen ? '化' + s.mutagen : '')).join('、') || '無主星'}`
+    ).join(';'),
+    liunianText: `2026 丙午年,流年命宮在${data.liunian.branch}`,
+  };
+
+  // (b) 稱骨面板先填本地結果
+  const chengguPanel = document.querySelector('#panel-chenggu .panel-body');
+  if (chengguPanel) {
+    chengguPanel.innerHTML = `
+      <div class="chenggu-weight">八字重量：<span class="chenggu-val">${cg.weightText}</span></div>
+      <div class="chenggu-verse">${cg.verse}</div>
+      <div class="chenggu-analysis" id="chenggu-analysis-content"></div>
+    `;
+  }
+
+  // 金鑰無效時喚回金鑰輸入
+  function showKeyInput(containerEl, onSaved) {
+    const existing = document.getElementById('inline-key-form');
+    if (existing) { existing.remove(); }
+    const wrap = document.createElement('div');
+    wrap.id = 'inline-key-form';
+    wrap.className = 'inline-key-form';
+    wrap.innerHTML = `
+      <div class="inline-key-label">請輸入 Gemini API 金鑰</div>
+      <div class="inline-key-row">
+        <input class="form-input inline-key-input" id="inline-key-inp" type="password" placeholder="金鑰" autocomplete="off" />
+        <button class="btn-retry inline-key-btn" id="inline-key-save">儲存金鑰</button>
+      </div>
+    `;
+    containerEl.insertBefore(wrap, containerEl.firstChild);
+    document.getElementById('inline-key-save').addEventListener('click', () => {
+      const val = (document.getElementById('inline-key-inp').value || '').trim();
+      if (val) {
+        setApiKey(val, false);
+        wrap.remove();
+        if (onSaved) onSaved();
+      }
+    });
+  }
+
+  // (c) 串流單段
+  async function streamSection(section, contentEl) {
+    // 清空舊內容,顯示 loading
+    contentEl.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+
+    let acc = '';
+    try {
+      await streamGenerate(section, facts, selectedModel, (chunk) => {
+        acc += chunk;
+        // 移除 loading(首個 chunk 時)
+        const dots = contentEl.querySelector('.loading-dots');
+        if (dots) dots.remove();
+        contentEl.innerText = acc;
+      });
+      // 移除可能仍存在的 loading
+      const dots = contentEl.querySelector('.loading-dots');
+      if (dots) dots.remove();
+      if (!acc) {
+        throw '生成失敗';
+      }
+    } catch (err) {
+      const dots = contentEl.querySelector('.loading-dots');
+      if (dots) dots.remove();
+
+      let msg = '生成失敗';
+      if (err === 'KEY_INVALID') {
+        msg = '金鑰無效,請重新輸入金鑰';
+      } else if (err === 'QUOTA') {
+        msg = 'Gemini 額度已用盡,請稍後再試';
+      } else if (err === 'NETWORK') {
+        msg = '連線失敗,請檢查網路';
+      } else if (typeof err === 'string') {
+        msg = err;
+      }
+
+      const errWrap = document.createElement('div');
+      errWrap.className = 'stream-error-wrap';
+      errWrap.innerHTML = `
+        <div class="stream-error-msg">${msg}</div>
+        <button class="btn-retry">重新揭示</button>
+      `;
+      contentEl.innerHTML = acc ? `<div style="white-space:pre-wrap;">${acc}</div>` : '';
+      contentEl.appendChild(errWrap);
+
+      if (err === 'KEY_INVALID') {
+        showKeyInput(contentEl, null);
+      }
+
+      errWrap.querySelector('.btn-retry').addEventListener('click', () => {
+        streamSection(section, contentEl);
+      });
+    }
+  }
+
+  // 依序串流四段
+  async function runAllSections() {
+    // overall
+    const overallEl = document.querySelector('#panel-overall .panel-body');
+    if (overallEl) {
+      try { await streamSection('overall', overallEl); } catch (_) { /* 顯示重試 UI 後繼續 */ }
+    }
+
+    // palaces
+    const palacesEl = document.querySelector('#panel-palaces .panel-body');
+    if (palacesEl) {
+      try { await streamSection('palaces', palacesEl); } catch (_) { /* 繼續 */ }
+    }
+
+    // chenggu — 填到本地結果下方的論斷區
+    const chengguAnalysisEl = document.getElementById('chenggu-analysis-content');
+    if (chengguAnalysisEl) {
+      try { await streamSection('chenggu', chengguAnalysisEl); } catch (_) { /* 繼續 */ }
+    }
+
+    // liunian
+    const liunianEl = document.querySelector('#panel-liunian .panel-body');
+    if (liunianEl) {
+      try { await streamSection('liunian', liunianEl); } catch (_) { /* 繼續 */ }
+    }
+  }
+
+  runAllSections();
+}
 
 // ── 啟動 ───────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', renderForm);
