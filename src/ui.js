@@ -460,6 +460,33 @@ function renderPanels(data) {
     });
   }
 
+  // Markdown → 安全 HTML：先轉義 HTML，再套用自家標記，避免 Gemini 回傳內容注入
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function inlineMd(s) {
+    return s.replace(/\*\*(.+?)\*\*/g, '<strong class="md-sub">$1</strong>');
+  }
+  function renderMarkdown(text) {
+    return escapeHtml(text)
+      .split(/\n\s*\n/)
+      .map((block) => {
+        const t = block.trim();
+        if (!t) return '';
+        const h = t.match(/^(#{1,4})\s+([\s\S]+)$/);
+        if (h) return `<h4 class="md-h">${inlineMd(h[2].trim())}</h4>`;
+        const lines = t.split('\n').filter((l) => l.trim());
+        if (lines.length && lines.every((l) => /^\s*(\d+[.、)]|[-*•])\s+/.test(l))) {
+          const items = lines
+            .map((l) => `<li>${inlineMd(l.replace(/^\s*(\d+[.、)]|[-*•])\s+/, ''))}</li>`)
+            .join('');
+          return `<ul class="md-list">${items}</ul>`;
+        }
+        return `<p class="md-p">${inlineMd(t.replace(/\n/g, '<br>'))}</p>`;
+      })
+      .join('');
+  }
+
   // (c) 串流單段
   async function streamSection(section, contentEl) {
     // 清空舊內容,顯示 loading
@@ -472,7 +499,7 @@ function renderPanels(data) {
         // 移除 loading(首個 chunk 時)
         const dots = contentEl.querySelector('.loading-dots');
         if (dots) dots.remove();
-        contentEl.innerText = acc;
+        contentEl.innerHTML = renderMarkdown(acc);
       });
       // 移除可能仍存在的 loading
       const dots = contentEl.querySelector('.loading-dots');
@@ -504,8 +531,7 @@ function renderPanels(data) {
       contentEl.textContent = '';
       if (acc) {
         const accDiv = document.createElement('div');
-        accDiv.style.whiteSpace = 'pre-wrap';
-        accDiv.textContent = acc;
+        accDiv.innerHTML = renderMarkdown(acc);
         contentEl.appendChild(accDiv);
       }
       contentEl.appendChild(errWrap);

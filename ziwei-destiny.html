@@ -358,12 +358,43 @@ body{
   opacity:.85;
 }
 .chenggu-analysis {
-  white-space:pre-wrap;line-height:1.95;
+  line-height:1.95;
 }
 
-/* ── panel-body 文字 ──────────────────────────────────────── */
-.panel-body {
-  white-space:pre-wrap;
+/* ── 解盤文字 Markdown 排版 ───────────────────────────────── */
+.md-p {
+  margin:0 0 1.15em;
+  line-height:2.05;
+}
+.md-p:last-child { margin-bottom:0; }
+.md-h {
+  margin:1.5em 0 .7em;
+  font-size:1.18rem;letter-spacing:.06em;
+  color:var(--gold-light);
+  text-shadow:0 0 12px rgba(212,175,90,.35);
+}
+.md-h:first-child { margin-top:0; }
+.md-list {
+  margin:0 0 1.15em;
+  padding:0;
+  list-style:none;
+}
+.md-list li {
+  position:relative;
+  margin:0 0 1.1em;
+  padding:14px 16px 14px 18px;
+  line-height:2.05;
+  background:rgba(7,10,20,.45);
+  border-left:3px solid rgba(212,175,90,.55);
+  border-radius:0 8px 8px 0;
+}
+.md-list li:last-child { margin-bottom:0; }
+.md-sub {
+  display:inline-block;
+  color:var(--gold);
+  font-weight:700;
+  letter-spacing:.04em;
+  margin-bottom:.15em;
 }
 
 /* ── 金鑰內嵌輸入 ─────────────────────────────────────────── */
@@ -397,20 +428,20 @@ body{
   animation:fadeIn .6s ease both;
 }
 .panel-title{
-  padding:14px 22px;
-  font-size:.9rem;letter-spacing:.22em;
-  color:var(--gold);font-weight:600;
+  padding:18px 24px;
+  font-size:1.15rem;letter-spacing:.2em;
+  color:var(--gold);font-weight:700;
   border-bottom:1px solid var(--line);
   background:rgba(7,10,20,.4);
   /* 鎏金分隔線效果 */
   background-image:linear-gradient(90deg,rgba(212,175,90,.18) 0%,transparent 80%);
   background-size:100% 100%;
+  text-shadow:0 0 14px rgba(212,175,90,.3);
 }
 .panel-body{
-  padding:20px 22px;
-  color:var(--text);font-size:.9rem;line-height:1.95;
+  padding:24px 26px;
+  color:var(--text);font-size:1.04rem;line-height:2.05;
   min-height:48px;
-  white-space:pre-wrap;
 }
 
 /* ── 流年面板 — 流光動畫外框 ────────────────────────────── */
@@ -9307,8 +9338,7 @@ function getChengGu(yearGanZhi, lunarMonth, lunarDay, hourZhi) {
   const verse = VERSES[clampedKey] || '';
 
   return { yearQian, monthQian, dayQian, hourQian, totalQian, weightText, verse };
-}
-
+}
 // 依賴瀏覽器全域 iztro / Solar / Lunar(由 vendor script 提供)
 
 function buildChart(input) {
@@ -9350,8 +9380,7 @@ function buildChart(input) {
       mutagen: horo.yearly.mutagen,
     },
   };
-}
-
+}
 /**
  * gemini.js — 封裝 Google Gemini API
  * 分段 prompt 建構、金鑰管理、串流生成
@@ -9470,10 +9499,7 @@ async function streamGenerate(section, facts, model, onChunk) {
     if (err === 'KEY_INVALID' || err === 'QUOTA' || err === 'NETWORK') throw err;
     throw 'NETWORK';
   }
-}
-
-
-
+}
 
 // ── module 層級狀態 ─────────────────────────────────────────
 let selectedModel = 'gemini-2.5-flash';
@@ -9933,6 +9959,33 @@ function renderPanels(data) {
     });
   }
 
+  // Markdown → 安全 HTML：先轉義 HTML，再套用自家標記，避免 Gemini 回傳內容注入
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function inlineMd(s) {
+    return s.replace(/\*\*(.+?)\*\*/g, '<strong class="md-sub">$1</strong>');
+  }
+  function renderMarkdown(text) {
+    return escapeHtml(text)
+      .split(/\n\s*\n/)
+      .map((block) => {
+        const t = block.trim();
+        if (!t) return '';
+        const h = t.match(/^(#{1,4})\s+([\s\S]+)$/);
+        if (h) return `<h4 class="md-h">${inlineMd(h[2].trim())}</h4>`;
+        const lines = t.split('\n').filter((l) => l.trim());
+        if (lines.length && lines.every((l) => /^\s*(\d+[.、)]|[-*•])\s+/.test(l))) {
+          const items = lines
+            .map((l) => `<li>${inlineMd(l.replace(/^\s*(\d+[.、)]|[-*•])\s+/, ''))}</li>`)
+            .join('');
+          return `<ul class="md-list">${items}</ul>`;
+        }
+        return `<p class="md-p">${inlineMd(t.replace(/\n/g, '<br>'))}</p>`;
+      })
+      .join('');
+  }
+
   // (c) 串流單段
   async function streamSection(section, contentEl) {
     // 清空舊內容,顯示 loading
@@ -9945,7 +9998,7 @@ function renderPanels(data) {
         // 移除 loading(首個 chunk 時)
         const dots = contentEl.querySelector('.loading-dots');
         if (dots) dots.remove();
-        contentEl.innerText = acc;
+        contentEl.innerHTML = renderMarkdown(acc);
       });
       // 移除可能仍存在的 loading
       const dots = contentEl.querySelector('.loading-dots');
@@ -9977,8 +10030,7 @@ function renderPanels(data) {
       contentEl.textContent = '';
       if (acc) {
         const accDiv = document.createElement('div');
-        accDiv.style.whiteSpace = 'pre-wrap';
-        accDiv.textContent = acc;
+        accDiv.innerHTML = renderMarkdown(acc);
         contentEl.appendChild(accDiv);
       }
       contentEl.appendChild(errWrap);
