@@ -1,0 +1,9 @@
+:root{
+  --bg-deep:#070a14; --bg-mid:#16223f; --gold:#d4af5a; --gold-light:#f4e4b8;
+  --ink:#7f8db5; --text:#cdd6e8; --line:#24304f;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:"Noto Serif TC","Songti TC",serif;color:var(--text);
+  background:radial-gradient(ellipse at 50% 0%,#10182e 0%,#070a14 60%,#04050a 100%);
+  min-height:100vh;}
+button{font-family:inherit;cursor:pointer;}
