@@ -243,8 +243,29 @@ function onSubmit() {
   }
 
   // 起盤
-  const chartData = buildChart(input);
-  renderChart(chartData);
+  try {
+    const chartData = buildChart(input);
+    renderChart(chartData);
+  } catch (err) {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+      <div class="act1-wrap">
+        <header class="act1-header">
+          <h1 class="title-main">紫微斗數</h1>
+          <p class="title-sub">命 ‧ 八字 ‧ 流年</p>
+        </header>
+        <div class="form-card fade-in">
+          <div class="error-page-msg">排盤時發生問題,請確認出生資料後重試。</div>
+          <div class="form-submit-row">
+            <button class="btn-primary" id="btn-retry-form">重新輸入</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('btn-retry-form').addEventListener('click', () => {
+      renderForm();
+    });
+  }
 }
 
 // ── 地支 → 格子位置 (row, col) 1-indexed ────────────────────
@@ -347,15 +368,36 @@ function renderChart(data) {
           <div class="panel-title">八字重量</div>
           <div class="panel-body"></div>
         </div>
-        <div class="panel-card" id="panel-liunian">
+        <div class="panel-card panel-liunian-glow" id="panel-liunian">
           <div class="panel-title">2026 流年</div>
           <div class="panel-body"></div>
         </div>
       </div>
+
+      <div class="act2-footer">
+        <button class="btn-primary" id="btn-new-chart">另起一盤</button>
+        <button class="btn-secondary" id="btn-print">列印 / 存 PDF</button>
+      </div>
+      <div class="disclaimer">本內容依傳統命理觀點生成,僅供娛樂與參考,不構成醫療、財務或人生決策建議。</div>
     </div>
   `;
 
   renderPanels(data);
+
+  // 另起一盤
+  const btnNew = document.getElementById('btn-new-chart');
+  if (btnNew) {
+    btnNew.addEventListener('click', () => {
+      document.getElementById('app').innerHTML = '';
+      renderForm();
+    });
+  }
+
+  // 列印 / 存 PDF
+  const btnPrint = document.getElementById('btn-print');
+  if (btnPrint) {
+    btnPrint.addEventListener('click', () => { window.print(); });
+  }
 }
 
 // ── 四段解讀面板 ───────────────────────────────────────────

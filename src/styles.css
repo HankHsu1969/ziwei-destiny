@@ -1,34 +1,75 @@
+/* ── CSS 變數 ─────────────────────────────────────────────── */
 :root{
   --bg-deep:#070a14; --bg-mid:#16223f; --gold:#d4af5a; --gold-light:#f4e4b8;
   --ink:#7f8db5; --text:#cdd6e8; --line:#24304f;
+  --gold-glow:rgba(212,175,90,.45);
 }
-*{box-sizing:border-box;}
-body{margin:0;font-family:"Noto Serif TC","Songti TC",serif;color:var(--text);
-  background:radial-gradient(ellipse at 50% 0%,#10182e 0%,#070a14 60%,#04050a 100%);
-  min-height:100vh;}
+
+/* ── Reset & Base ─────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;}
 button{font-family:inherit;cursor:pointer;}
 
-/* ── 第一幕 入命表單 ──────────────────────────── */
+/* ── 背景 — 深夜藍黑星空 ──────────────────────────────────── */
+body{
+  font-family:"Noto Serif TC","Songti TC",serif;
+  color:var(--text);
+  min-height:100vh;
+  /* 主漸層 */
+  background:
+    /* 星塵細點(多層 radial-gradient 模擬星點) */
+    radial-gradient(circle at 15% 25%, rgba(212,175,90,.08) 0%, transparent 1px),
+    radial-gradient(circle at 72% 8%,  rgba(200,220,255,.12) 0%, transparent 1px),
+    radial-gradient(circle at 33% 68%, rgba(180,200,255,.10) 0%, transparent 1px),
+    radial-gradient(circle at 88% 44%, rgba(212,175,90,.07) 0%, transparent 1px),
+    radial-gradient(circle at 54% 82%, rgba(200,220,255,.09) 0%, transparent 1px),
+    radial-gradient(circle at 6%  55%, rgba(180,200,255,.08) 0%, transparent 1px),
+    radial-gradient(circle at 91% 78%, rgba(212,175,90,.06) 0%, transparent 1px),
+    radial-gradient(circle at 42% 20%, rgba(200,220,255,.11) 0%, transparent 1px),
+    radial-gradient(circle at 67% 60%, rgba(212,175,90,.07) 0%, transparent 1px),
+    radial-gradient(circle at 22% 90%, rgba(180,200,255,.09) 0%, transparent 1px),
+    /* 底層宇宙漸層 */
+    radial-gradient(ellipse at 50% 0%, #10182e 0%, #070a14 60%, #04050a 100%);
+  background-size:
+    180px 160px, 220px 200px, 150px 180px, 260px 220px, 190px 170px,
+    130px 150px, 240px 210px, 170px 190px, 200px 160px, 140px 200px,
+    100% 100%;
+}
+
+/* ── 淡入動畫 ─────────────────────────────────────────────── */
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(14px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.fade-in{animation:fadeIn .65s ease both;}
+
+/* ── 第一幕 入命表單 ──────────────────────────────────────── */
 .act1-wrap{
   display:flex;flex-direction:column;align-items:center;
   min-height:100vh;padding:48px 16px 64px;
+  animation:fadeIn .7s ease both;
 }
 .act1-header{text-align:center;margin-bottom:40px;}
+
+/* 大標題 */
 .title-main{
   font-size:clamp(2rem,6vw,3.2rem);
-  letter-spacing:.4em;color:var(--gold);
-  text-shadow:0 0 24px rgba(212,175,90,.45);
-  margin:0 0 8px;font-weight:400;
+  letter-spacing:.45em;
+  color:var(--gold-light);
+  text-shadow:0 0 28px rgba(212,175,90,.65), 0 0 60px rgba(212,175,90,.25);
+  margin:0 0 10px;font-weight:400;
 }
 .title-sub{
-  font-size:1rem;letter-spacing:.5em;color:var(--ink);margin:0;
+  font-size:1rem;letter-spacing:.55em;color:var(--ink);margin:0;
 }
 
-/* 卡片 */
+/* 表單卡片 */
 .form-card{
-  background:rgba(22,34,63,.72);border:1px solid var(--line);
-  border-radius:8px;padding:32px 28px;width:100%;max-width:480px;
-  backdrop-filter:blur(6px);
+  background:linear-gradient(160deg,rgba(22,34,63,.82),rgba(10,14,28,.90));
+  border:1px solid var(--line);
+  border-radius:10px;padding:32px 28px;
+  width:100%;max-width:480px;
+  backdrop-filter:blur(8px);
+  box-shadow:0 4px 32px rgba(0,0,0,.5),inset 0 1px 0 rgba(212,175,90,.08);
 }
 
 /* 錯誤區 */
@@ -38,6 +79,14 @@ button{font-family:inherit;cursor:pointer;}
   background:rgba(224,85,85,.12);border-radius:4px;
 }
 .form-error-item{color:#f08080;font-size:.875rem;line-height:1.8;}
+
+/* 錯誤頁訊息 */
+.error-page-msg{
+  text-align:center;padding:20px;
+  color:#f08080;font-size:1rem;line-height:1.9;
+  letter-spacing:.05em;
+  margin-bottom:16px;
+}
 
 /* 通用列 */
 .form-row{margin-bottom:20px;}
@@ -49,14 +98,17 @@ button{font-family:inherit;cursor:pointer;}
 
 /* input / select */
 .form-input{
-  width:100%;background:rgba(7,10,20,.6);
-  border:1px solid var(--line);border-radius:4px;
+  width:100%;background:rgba(7,10,20,.65);
+  border:1px solid var(--line);border-radius:5px;
   padding:9px 12px;color:var(--text);font-size:.95rem;
-  font-family:inherit;outline:none;transition:border-color .2s;
+  font-family:inherit;outline:none;transition:border-color .25s,box-shadow .25s;
 }
-.form-input:focus{border-color:var(--gold);}
+.form-input:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 2px rgba(212,175,90,.18);
+}
 .form-select{appearance:none;-webkit-appearance:none;cursor:pointer;}
-.form-select option{background:#16223f;}
+.form-select option{background:#16223f;color:var(--text);}
 
 /* 日期三欄 */
 .date-group{display:flex;gap:8px;}
@@ -94,28 +146,42 @@ button{font-family:inherit;cursor:pointer;}
 .form-submit-row{text-align:center;margin-top:8px;}
 .btn-primary{
   display:inline-block;padding:12px 48px;
-  background:linear-gradient(135deg,#b8932a 0%,var(--gold) 50%,#e8c96a 100%);
+  background:linear-gradient(135deg,#a07828 0%,var(--gold) 45%,#f0d880 75%,#c49830 100%);
   color:#07090e;font-size:1.05rem;letter-spacing:.4em;font-weight:700;
-  border:none;border-radius:4px;
-  box-shadow:0 0 16px rgba(212,175,90,.35),inset 0 1px 0 rgba(255,255,255,.2);
-  transition:opacity .2s,box-shadow .2s;
+  border:none;border-radius:5px;
+  box-shadow:0 0 20px rgba(212,175,90,.4),inset 0 1px 0 rgba(255,255,255,.25);
+  transition:opacity .2s,box-shadow .25s;
 }
-.btn-primary:hover{opacity:.88;box-shadow:0 0 28px rgba(212,175,90,.55);}
+.btn-primary:hover{
+  opacity:.9;
+  box-shadow:0 0 36px rgba(212,175,90,.65),inset 0 1px 0 rgba(255,255,255,.3);
+}
 .btn-primary:active{opacity:.75;}
 
-/* ── 淡入動畫 ──────────────────────────────────────────── */
-@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
-.fade-in{animation:fadeIn .6s ease both;}
+/* 次要按鈕(列印) */
+.btn-secondary{
+  display:inline-block;padding:11px 32px;
+  background:transparent;
+  border:1px solid var(--line);border-radius:5px;
+  color:var(--text);font-size:.95rem;letter-spacing:.15em;
+  transition:border-color .2s,color .2s,box-shadow .2s;
+  font-family:inherit;
+}
+.btn-secondary:hover{
+  border-color:var(--gold);color:var(--gold-light);
+  box-shadow:0 0 12px rgba(212,175,90,.22);
+}
 
-/* ── 第二幕 命盤 ──────────────────────────────────────── */
+/* ── 第二幕 命盤 ──────────────────────────────────────────── */
 .act2-wrap{
   display:flex;flex-direction:column;align-items:center;
   min-height:100vh;padding:40px 16px 80px;
+  animation:fadeIn .65s ease both;
 }
 .act2-header{text-align:center;margin-bottom:32px;}
 
 /* 命盤外框 */
-.board-wrap{width:100%;max-width:900px;padding:0 8px;}
+.board-wrap{width:100%;max-width:900px;padding:0 8px;overflow-x:auto;}
 
 /* 4×4 格線 */
 .board{
@@ -123,14 +189,15 @@ button{font-family:inherit;cursor:pointer;}
   grid-template-columns:repeat(4,1fr);
   grid-template-rows:repeat(4,minmax(120px,auto));
   gap:6px;
+  min-width:480px;/* 防止在窄螢幕擠爆 */
 }
 
 /* 宮格 */
 .palace{
   position:relative;
-  background:rgba(22,34,63,.78);
+  background:linear-gradient(160deg,rgba(22,32,58,.85),rgba(10,14,28,.9));
   border:1px solid var(--line);
-  border-radius:6px;
+  border-radius:7px;
   padding:8px 10px;
   overflow:hidden;
   transition:border-color .25s,box-shadow .25s;
@@ -138,7 +205,7 @@ button{font-family:inherit;cursor:pointer;}
 }
 .palace:hover{
   border-color:var(--gold);
-  box-shadow:0 0 14px rgba(212,175,90,.28),inset 0 0 10px rgba(212,175,90,.06);
+  box-shadow:0 0 18px rgba(212,175,90,.3),inset 0 0 12px rgba(212,175,90,.06);
 }
 
 /* 地支角標 */
@@ -150,7 +217,7 @@ button{font-family:inherit;cursor:pointer;}
 
 /* 宮名 */
 .palace-name{
-  font-size:.85rem;letter-spacing:.12em;
+  font-size:.85rem;letter-spacing:.15em;
   color:var(--gold);font-weight:600;
   margin-bottom:6px;
   text-shadow:0 0 8px rgba(212,175,90,.4);
@@ -162,11 +229,16 @@ button{font-family:inherit;cursor:pointer;}
   font-size:.88rem;color:var(--gold-light);
   font-weight:600;margin-right:4px;margin-bottom:2px;
   letter-spacing:.05em;
+  text-shadow:0 0 6px rgba(244,228,184,.3);
 }
+/* 四化標記配色 */
 .mutagen{
-  font-size:.7rem;color:var(--gold);
-  letter-spacing:0;vertical-align:.05em;
+  font-size:.7rem;letter-spacing:0;vertical-align:.05em;
 }
+/* ⟨祿⟩ 紫金 */
+.star-major .mutagen[data-type="祿"],.mutagen:has(+nothing):first-child{color:#e8c96a;}
+/* 統一用 span title 或類別不同;以下用內容選擇器 */
+.mutagen{color:var(--gold);}
 
 /* 輔星 */
 .stars-minor-row{margin-top:4px;}
@@ -187,21 +259,21 @@ button{font-family:inherit;cursor:pointer;}
   display:inline-block;
   font-size:.68rem;color:var(--ink);
   margin-right:3px;margin-bottom:1px;
-  opacity:.75;
+  opacity:.72;
 }
 
 /* 中宮 */
 .palace.center{
   display:flex;flex-direction:column;justify-content:center;align-items:center;
   text-align:center;gap:4px;
-  background:rgba(16,24,52,.9);
+  background:radial-gradient(circle,#16223f,#0a1020);
   border:1px solid var(--gold);
-  box-shadow:inset 0 0 24px rgba(212,175,90,.08),0 0 20px rgba(212,175,90,.12);
+  box-shadow:inset 0 0 28px rgba(212,175,90,.08),0 0 22px rgba(212,175,90,.14);
 }
 .center-name{
-  font-size:1.4rem;letter-spacing:.25em;
+  font-size:1.4rem;letter-spacing:.28em;
   color:var(--gold);font-weight:700;
-  text-shadow:0 0 16px rgba(212,175,90,.55);
+  text-shadow:0 0 18px rgba(212,175,90,.6);
   margin-bottom:2px;
 }
 .center-gender{
@@ -232,24 +304,25 @@ button{font-family:inherit;cursor:pointer;}
   letter-spacing:.05em;white-space:nowrap;
 }
 
-/* ── loading 星點動畫 ──────────────────────────────────── */
+/* ── loading 星點動畫 ─────────────────────────────────────── */
 @keyframes dotBlink {
   0%,80%,100% { opacity:.15; transform:scale(.8); }
-  40%          { opacity:1;   transform:scale(1.2); }
+  40%          { opacity:1;   transform:scale(1.3); }
 }
 .loading-dots {
-  display:flex;gap:10px;justify-content:center;align-items:center;
-  padding:24px 0;
+  display:flex;gap:12px;justify-content:center;align-items:center;
+  padding:28px 0;
 }
 .loading-dots span {
-  display:inline-block;width:8px;height:8px;border-radius:50%;
+  display:inline-block;width:9px;height:9px;border-radius:50%;
   background:var(--gold);
-  animation:dotBlink 1.2s ease-in-out infinite;
+  box-shadow:0 0 8px rgba(212,175,90,.6);
+  animation:dotBlink 1.3s ease-in-out infinite;
 }
-.loading-dots span:nth-child(2){ animation-delay:.2s; }
-.loading-dots span:nth-child(3){ animation-delay:.4s; }
+.loading-dots span:nth-child(2){ animation-delay:.22s; }
+.loading-dots span:nth-child(3){ animation-delay:.44s; }
 
-/* ── 串流錯誤 ──────────────────────────────────────────── */
+/* ── 串流錯誤 ─────────────────────────────────────────────── */
 .stream-error-wrap { margin-top:12px; }
 .stream-error-msg {
   color:#f08080;font-size:.875rem;line-height:1.8;margin-bottom:10px;
@@ -265,27 +338,29 @@ button{font-family:inherit;cursor:pointer;}
   background:var(--gold);color:#07090e;
 }
 
-/* ── 稱骨本地資料 ──────────────────────────────────────── */
+/* ── 稱骨本地資料 ─────────────────────────────────────────── */
 .chenggu-weight {
   font-size:.95rem;letter-spacing:.1em;
   color:var(--gold-light);margin-bottom:8px;
 }
 .chenggu-val { color:var(--gold);font-weight:700; }
 .chenggu-verse {
-  white-space:pre-wrap;line-height:2;font-size:.88rem;
-  color:var(--ink);border-left:2px solid var(--line);
-  padding-left:12px;margin-bottom:16px;
+  white-space:pre-wrap;line-height:2.1;font-size:.88rem;
+  color:var(--ink);
+  border-left:2px solid var(--gold);
+  padding-left:14px;margin-bottom:16px;
+  opacity:.85;
 }
 .chenggu-analysis {
-  white-space:pre-wrap;line-height:1.9;
+  white-space:pre-wrap;line-height:1.95;
 }
 
-/* ── panel-body 文字 ───────────────────────────────────── */
+/* ── panel-body 文字 ──────────────────────────────────────── */
 .panel-body {
   white-space:pre-wrap;
 }
 
-/* ── 金鑰內嵌輸入 ──────────────────────────────────────── */
+/* ── 金鑰內嵌輸入 ─────────────────────────────────────────── */
 .inline-key-form {
   background:rgba(7,10,20,.5);border:1px solid var(--line);
   border-radius:6px;padding:14px 16px;margin-bottom:14px;
@@ -300,33 +375,172 @@ button{font-family:inherit;cursor:pointer;}
   white-space:nowrap;flex-shrink:0;
 }
 
-/* ── 流年面板佔位強調 ──────────────────────────────────── */
-#panel-liunian {
-  border-color:rgba(212,175,90,.35);
-}
-
-/* ── 面板區 ────────────────────────────────────────────── */
+/* ── 面板區 ───────────────────────────────────────────────── */
 .panels-wrap{
   width:100%;max-width:900px;
-  display:flex;flex-direction:column;gap:16px;
-  margin-top:28px;padding:0 8px;
+  display:flex;flex-direction:column;gap:18px;
+  margin-top:30px;padding:0 8px;
 }
 .panel-card{
-  background:rgba(22,34,63,.72);
+  background:rgba(16,24,46,.72);
   border:1px solid var(--line);
-  border-radius:8px;
+  border-radius:10px;
   overflow:hidden;
-  backdrop-filter:blur(4px);
+  backdrop-filter:blur(6px);
+  box-shadow:0 2px 20px rgba(0,0,0,.4);
+  animation:fadeIn .6s ease both;
 }
 .panel-title{
-  padding:14px 20px;
-  font-size:.9rem;letter-spacing:.2em;
+  padding:14px 22px;
+  font-size:.9rem;letter-spacing:.22em;
   color:var(--gold);font-weight:600;
   border-bottom:1px solid var(--line);
-  background:rgba(7,10,20,.35);
+  background:rgba(7,10,20,.4);
+  /* 鎏金分隔線效果 */
+  background-image:linear-gradient(90deg,rgba(212,175,90,.18) 0%,transparent 80%);
+  background-size:100% 100%;
 }
 .panel-body{
-  padding:20px;
-  color:var(--text);font-size:.9rem;line-height:1.9;
+  padding:20px 22px;
+  color:var(--text);font-size:.9rem;line-height:1.95;
   min-height:48px;
+  white-space:pre-wrap;
+}
+
+/* ── 流年面板 — 流光動畫外框 ────────────────────────────── */
+@keyframes liunianGlow{
+  0%   { box-shadow:0 0 12px rgba(212,175,90,.3),  inset 0 0 8px rgba(212,175,90,.04); border-color:#c49830; }
+  50%  { box-shadow:0 0 32px rgba(212,175,90,.65), inset 0 0 18px rgba(212,175,90,.1); border-color:#f4e4b8; }
+  100% { box-shadow:0 0 12px rgba(212,175,90,.3),  inset 0 0 8px rgba(212,175,90,.04); border-color:#c49830; }
+}
+.panel-liunian-glow{
+  border-color:rgba(212,175,90,.5);
+  animation:liunianGlow 2.8s ease-in-out infinite;
+}
+.panel-liunian-glow .panel-title{
+  color:var(--gold-light);
+  text-shadow:0 0 10px rgba(212,175,90,.4);
+}
+
+/* ── 頁尾按鈕列 & 免責聲明 ──────────────────────────────── */
+.act2-footer{
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  margin-top:36px;padding:0 8px;
+}
+.disclaimer{
+  text-align:center;
+  font-size:.75rem;letter-spacing:.08em;
+  color:var(--ink);opacity:.7;
+  margin-top:18px;padding:0 16px 12px;
+  line-height:1.8;
+}
+
+/* ── RWD 窄螢幕 ───────────────────────────────────────────── */
+@media (max-width:640px){
+  .act1-wrap { padding:32px 12px 48px; }
+  .form-card { padding:22px 16px; }
+  .title-main { letter-spacing:.3em; }
+  .date-group { flex-direction:column;gap:6px; }
+  .date-inp { width:100%; }
+
+  .act2-wrap { padding:28px 8px 60px; }
+  .board-wrap { overflow-x:auto;-webkit-overflow-scrolling:touch; }
+  .board { min-width:520px; }
+  .palace { min-height:100px;padding:6px 8px; }
+  .star-major { font-size:.8rem; }
+  .star-minor { font-size:.68rem; }
+  .star-adj   { font-size:.62rem; }
+  .palace-name{ font-size:.78rem; }
+
+  .panels-wrap { padding:0 4px; }
+  .act2-footer { flex-direction:column;align-items:center; }
+  .btn-primary  { padding:12px 36px;width:100%;max-width:280px; }
+  .btn-secondary{ width:100%;max-width:280px;text-align:center; }
+}
+
+/* ── 列印樣式 ─────────────────────────────────────────────── */
+@media print{
+  /* 白底深字 */
+  body{
+    background:#fff !important;
+    color:#1a1a2e !important;
+    font-size:11pt;
+  }
+
+  /* 隱藏互動元素 */
+  .act2-footer,
+  .btn-primary,.btn-secondary,.btn-retry,
+  .inline-key-form,.key-section,
+  .act1-wrap header,
+  .form-card,
+  .disclaimer,
+  .stream-error-wrap,
+  #key-section,#key-section-haskey{
+    display:none !important;
+  }
+
+  /* 命盤標題保留 */
+  .act2-header{text-align:center;margin-bottom:16pt;}
+  .title-main{color:#2c1a00;text-shadow:none;font-size:22pt;letter-spacing:.3em;}
+  .title-sub{color:#555;font-size:10pt;}
+
+  /* 宮格白底 */
+  .board-wrap{overflow:visible !important;}
+  .board{min-width:unset !important;gap:4px;}
+  .palace{
+    background:#fff !important;
+    border:1px solid #aaa !important;
+    box-shadow:none !important;
+    page-break-inside:avoid;
+    min-height:90px;
+  }
+  .palace:hover{box-shadow:none !important;border-color:#aaa !important;}
+  .palace.center{
+    background:#f8f5ea !important;
+    border:2px solid #8a6a00 !important;
+    box-shadow:none !important;
+  }
+  .palace-name{color:#8a6a00 !important;text-shadow:none !important;}
+  .palace-branch{color:#666 !important;}
+  .star-major{color:#1a1a2e !important;text-shadow:none !important;}
+  .star-minor{color:#444 !important;}
+  .star-adj{color:#777 !important;}
+  .mutagen{color:#8a6a00 !important;}
+  .center-name{color:#8a6a00 !important;text-shadow:none !important;}
+  .center-gender,.center-date,.center-wuxing,.center-soul,.bazi-item{color:#333 !important;}
+  .center-label{color:#777 !important;}
+
+  /* 面板文字 */
+  .panels-wrap{margin-top:20pt;}
+  .panel-card{
+    background:#fff !important;
+    border:1px solid #ccc !important;
+    box-shadow:none !important;
+    animation:none !important;
+    page-break-inside:avoid;
+    margin-bottom:12pt;
+  }
+  .panel-liunian-glow{
+    animation:none !important;
+    border-color:#ccc !important;
+    box-shadow:none !important;
+  }
+  .panel-title{
+    background:#f0ece0 !important;
+    border-bottom:1px solid #ccc !important;
+    color:#8a6a00 !important;
+    text-shadow:none !important;
+  }
+  .panel-body{
+    color:#1a1a2e !important;
+    white-space:pre-wrap;
+  }
+  .chenggu-weight,.chenggu-val{color:#8a6a00 !important;}
+  .chenggu-verse{color:#555 !important;border-left-color:#8a6a00 !important;}
+
+  /* loading 點點列印時隱藏 */
+  .loading-dots{display:none !important;}
+
+  /* 分頁友善 */
+  .board{page-break-after:always;}
 }
